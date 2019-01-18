@@ -8,7 +8,9 @@ module.exports = gql`
       hometown: String
       house: String
       concentration: String
+      hobbies: String
     ): [User!]
+    follows(status: String!): [User!]
     post(id: ID!): Post!
     posts: [Post!]
   }
@@ -42,6 +44,7 @@ module.exports = gql`
     bio: String
     picture: String
     hobbies: [HobbyInput!]
+
   }
 
   input HobbyInput {

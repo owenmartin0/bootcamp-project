@@ -1,28 +1,54 @@
 const User = require('../../../models/User')
+const { raw } = require('objection')
 
 const userResolver = async (obj, args, context) => {
-  // TODO: Write a resolver which returns a user given a user id.
+  const userByID = await User
+    .query()
+    .where('id', "=", args.id)
+
+  return userByID[0]
 }
 
 const usersResolver = async (obj, args, context) => {
   const { substr, hometown, house, concentration, hobbies } = args
-  /* TODO: Write a resolver which returns a list of all users.
+      const allUsers = await User.query()
+      .modify(function(queryBuilder){
+        if(substr) {
+          queryBuilder.where(raw('lower("name")'), 'like', '%' + substr.toLowerCase() + '%')
+        }
+        if(hometown){
+          queryBuilder.andWhere('hometown', hometown)
+        }
+        if(house){
+          queryBuilder.andWhere('house', house)
+        }
+        if(concentration){
+          queryBuilder.andWhere('concentration', concentration)
+        }
+        if(hobbies.length){
+          queryBuilder.join('hobbies', 'users.id', '=', 'hobbies.userId')
+          queryBuilder.where('hobby', hobbies)
+        }
+      })
+  return allUsers
+}
 
-  Once you're done, implement the following pieces of functionality one by one:
-
-  If any of the following arguments are provided, apply the corresponding filter:
-    - substr: include only users whose name contains the substring
-    - hometown: include only users from that hometown
-    - house: include only users from that house
-    - concentration: include only users who have that concentration
-    - hobbies: include only users who have indicated one of the hobbies in that list
-  */
+const followsResolver = async (obj, args, context) => {
+  const follows = await User
+  .query()
+  .modify(function(queryBuilder){
+    if (args.status) {
+      queryBuilder.whereExists(User.relatedQuery("following").where("status",status))
+    }
+  })
+  return follows
 }
 
 const resolver = {
   Query: {
     user: userResolver,
     users: usersResolver,
+    follows: followsResolver,
   },
 }
 
